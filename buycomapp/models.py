@@ -1,6 +1,7 @@
 from turtle import mode
 from django.db import models
 from django.contrib.auth.models import User
+from PIL import Image
 
 # Create your models here.
 category_choices=(
@@ -48,12 +49,12 @@ state_choices =(
     )
 
 class customer(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,verbose_name='User')
+    add_count=models.SmallIntegerField(default=0,verbose_name='Address count')
     name=models.CharField(max_length=100,verbose_name='name',null=False)
     phone=models.CharField(max_length=14,verbose_name='phone_number')
     email=models.EmailField(max_length=30,null=True,verbose_name='Email address')
     address=models.CharField(max_length=200,verbose_name='Address',null=False)
-    add_count=models.SmallIntegerField(verbose_name='Address count',default=0)
     country=models.CharField(max_length=10,choices = country_choices,verbose_name='Country')
     state=models.CharField(max_length=30,choices = state_choices,verbose_name='State')
     city=models.CharField(max_length=50,verbose_name='City')
@@ -61,7 +62,7 @@ class customer(models.Model):
     is_selected=models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.user)
+        return str(self.name)
 
 class product(models.Model):
     title=models.CharField(max_length=100,verbose_name='title')
@@ -77,6 +78,16 @@ class product(models.Model):
     def __str__(self):
         return str(self.title)
 
+    def save(self):
+        super().save()  # saving image first
+
+        img = Image.open(self.product_image.path) # Open image using self
+
+        if img.height > 500 or img.width > 500:
+            new_img = (500, 500)
+            img.thumbnail(new_img)
+            img.save(self.product_image.path)  # saving image at the same path
+
 class orderplaced(models.Model):
     status_choices=(
         ("Order placed","Order placed"),
@@ -88,10 +99,10 @@ class orderplaced(models.Model):
     )
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,verbose_name='User')
     product=models.ForeignKey(product,on_delete=models.CASCADE,null=True,verbose_name='Product')
-    address_details=models.ForeignKey(customer,on_delete=models.CASCADE,null=True,verbose_name="Adddress Details")
+    address_details=models.TextField(null=True,verbose_name="Adddress Details")
     quantity=models.PositiveSmallIntegerField(default=1,verbose_name='Quantity')
     total_amount=models.FloatField(default=0,verbose_name='Total amount')
-    ordered_date=models.DateField(verbose_name='Order date')
+    ordered_date=models.DateField(null=True,verbose_name='Order date')
     status=models.CharField(max_length=30,choices=status_choices,verbose_name='Status',default='Order placed')
 
     def __str__(self):

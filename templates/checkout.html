@@ -12,15 +12,6 @@
         </div>
     </div>
     <!-- Page Header End -->
-
-    <!--When order will be placed-->
-    <div class="container-fluid d-none">
-        <img src="/static/img/order_placed_image.png" alt="orderplaced" style="height: 120px; width: 120px; margin-left: 45%;">
-        <p style="text-align: center; margin-top: 40px; font-weight: bold;">Your Order has been placed.Thank you for ordering from us!</p>
-    </div>
-    <!--end-->
-
-
     <!-- Checkout Start -->
     <div class="container-fluid pt-5 d-{{varr1}} ">
         <div class="row px-xl-5">
@@ -209,7 +200,7 @@
                     <!--Form method post to get data in database-->
                         {% for a in user_details %}
                         <div class="card text-dark bg-transparent mb-3" style="max-width: 18rem;">
-                            <div class="card-header"><input type="checkbox" name="seladd">Address {{a.add_count}}</div>
+                            <div class="card-header"><input type="checkbox" name="seladd" id="seladd{{forloop.counter}}" value="{{a.add_count}}">Address {{a.add_count}}</div>
                             <div class="card-body">
                             <p class="card-text">Name : {{a.name}}</p>
                             <p class="card-text">Contact no. : {{a.phone}}</p>
@@ -218,7 +209,6 @@
                             <p class="card-text">{{a.zip}}</p>
                             </div>
                         </div>
-                        <input type="hidden" name="acount" value="{{a.add_count}}">
                         {% endfor %}
                         <button type="submit" class="btn btn-primary btn-lg font-weight-medium pr-5 pl-5 pb-2 pt-2">
                             Place Order

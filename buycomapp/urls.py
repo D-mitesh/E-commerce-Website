@@ -21,4 +21,5 @@ urlpatterns = [
     path('manage_address/edit_address/',views.profile),
     path('manage_address/add_address/',views.profile),
     path('manage_address/delete_address/',views.profile),
+    path('placed_order_details/',views.placed_order_details),
 ]

@@ -1,4 +1,5 @@
 from asyncio.windows_events import NULL
+from turtle import title
 from unittest import removeResult
 from django.contrib import messages
 from django.db import IntegrityError
@@ -63,53 +64,88 @@ def mycart(request):
     url = request.build_absolute_uri()
     urll=url.split('=')
     print(urll)
-    if urll[1] == 'None':
-        messages.error(request,'Please login or register to view your cart')
-        return redirect('http://127.0.0.1:8000/login/')
-    else:
-        user = User.objects.get(username=urll[1])
-        prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
-        print(prod)
-        tprice=0
-        for i in prod:
-            if i!='':
-                quanttity=i.quantity
-                tprice=i.price+tprice
-                print(tprice)
-                print('quantiy : ',quanttity)
-                summary_price=tprice+100
-            else:
-                messages.error(request,"No item added please add a item")
-        
-        return render(request,'cart.html',{'cart_item':prod,'uname':urll[1],'quanttity':quanttity,'summary_price':summary_price,'totall':tprice})
-        
+    try:
+        if urll[1] == 'None':
+            messages.error(request,'Please login or register to view your cart')
+            return redirect('http://127.0.0.1:8000/login/')
+        else:
+            user = User.objects.get(username=urll[1])
+            prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
+            print(prod)
+            tprice=0
+            for i in prod:
+                if i!='':
+                    quanttity=i.quantity
+                    tprice=i.price+tprice
+                    print(tprice)
+                    print('quantiy : ',quanttity)
+                    summary_price=tprice+100
+                else:
+                    messages.error(request,"No item added please add a item")
+            
+            return render(request,'cart.html',{'cart_item':prod,'uname':urll[1],'quanttity':quanttity,'summary_price':summary_price,'totall':tprice})
+    except UnboundLocalError:
+        messages.error(request,"No item added please add a item")
+        return render(request,'cart.html',{'uname':urll[1]})
 
 def checkout(request):
 
     url = request.build_absolute_uri()
     urll=url.split('=')
-    user=User.objects.get(username=urll[1])
+
+    if urll[1]!='None':
+        user=User.objects.get(username=urll[1])
             
-    userd=customer.objects.filter(user=user)
+        userd=customer.objects.filter(user=user)
 
-    print(userd)
+        try:
+            prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
 
-    prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
+            tprice=0
+            for i in prod:
+                prodc=i.product
+                quanttity=i.quantity
+                tprice=i.price+tprice
+                print(tprice)
+                print('quantiy : ',quanttity)
+                summary_price=tprice+100
 
-    tprice=0
-    for i in prod:
-        prodc=i.product
-        quanttity=i.quantity
-        tprice=i.price+tprice
-        print(tprice)
-        print('quantiy : ',quanttity)
-        summary_price=tprice+100
+            if request.method=='POST':
+                check=request.POST['seladd']
+                
+                custd=customer.objects.filter(Q(user=user) & Q(add_count=check))
 
-    if request.method=='POST':
-        check=request.POST['seladd']
-        acountt=request.POST['acount']
+                custcard=cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
 
-    return render(request,'checkout.html',{'varr1':'None','uname':urll[1],'user_details':userd,'item_detail':prod,'summary_price':summary_price,'totall':tprice})
+                for c in custd:
+                    name=c.name
+                    num=c.phone
+                    addr=c.address
+                    co=c.country
+                    st=c.state
+                    ci=c.city
+                    z=c.zipcode
+                com_address=name+" "+str(num)+" "+addr+" "+co+" "+st+" "+ci+" "+str(z)
+
+
+                for cc in custcard:
+
+                    place=orderplaced.objects.create(user=user,product=cc.product,address_details=com_address,quantity=cc.quantity,total_amount=cc.price,ordered_date=date.today())
+
+                    cartremove=cart.objects.filter(product=cc.product).delete()
+
+                    url='http://127.0.0.1:8000/placed_order_details/?name={}'.format(urll[1])
+
+                    return redirect(url,{'uname':urll[1]})
+
+            return render(request,'checkout.html',{'uname':urll[1],'user_details':userd,'item_detail':prod,'summary_price':summary_price,'totall':tprice})
+        except UnboundLocalError:
+            messages.error(request,"No item added please add a item")
+            return render(request,'cart.html',{'uname':urll[1]})
+
+    else:
+        messages.error(request,"Please login to checkout your items")
+        return redirect('http://127.0.0.1:8000/login/')
 
 def contact(request):
     return render(request,'contact.html',{})
@@ -270,7 +306,7 @@ def profile(request):
 
     elif page[3]=='manage_address':
         var1='none'
-        var2='flex'
+        var2='block'
         var3='none'
         print(user)
         uuser=customer.objects.filter(user=user)
@@ -297,7 +333,8 @@ def profile(request):
         if page[4]=='edit_address':
             var4='flex'
             var5='none'
-            uuser=customer.objects.filter(add_count=userr[2])
+            print(">>>>>>>",userr[2])
+            uuser=customer.objects.filter(Q(add_count=userr[2]) & Q(user=user))
             if request.method=='POST':
                 fname=request.POST['fname']
                 email=request.POST['email']
@@ -309,7 +346,7 @@ def profile(request):
                 zip=request.POST['zip']
 
                 updt=customer.objects.filter(user=user).update(name=fname,phone=mobile,email=email,address=address,country=country,state=state,city=city,zipcode=zip)
-                return render(request,'profile.html',{'uname':user.username,'var1':var1,'var2':var2,'var3':var3,'var4':var4,'var5':var5,'var6':var6,'country_choices':countchoice,'state_choices':statechoice,'address_details':uuser})
+            return render(request,'profile.html',{'uname':user.username,'var1':var1,'var2':var2,'var3':var3,'var4':var4,'var5':var5,'var6':var6,'country_choices':countchoice,'state_choices':statechoice,'address_details':uuser})
             
         elif page[4]=='delete_address':
             dlt=customer.objects.filter(add_count=userr[2]).delete()
@@ -337,49 +374,20 @@ def profile(request):
     else:
         var1='none'
         var2='none'
-        var3='flex'
+        var3='inline'
+
+        ordered_details=orderplaced.objects.filter(user=user)
+
+        return render(request,'profile.html',{'var1':var1,'var2':var2,'var3':var3,'uname':user.username,'od':ordered_details})
 
     return render(request,'profile.html',{'var1':var1,'var2':var2,'var3':var3,'uname':user.username,'country_choices':countchoice,'state_choices':statechoice,'u':user})
 
-'''def place_order(request):
-
+def placed_order_details(request):
     url = request.build_absolute_uri()
     urll=url.split('=')
-    print(urll)
 
     user=User.objects.get(username=urll[1])
 
-    getting=cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
+    ordered_details=orderplaced.objects.filter(Q(user=user) & Q(ordered_date=date.today()))
 
-    tprice=0
-    for g in getting:
-        prodc=g.product
-        print(prodc)
-        quantityy=g.quantity
-        print(quantityy)
-        tprice=g.price+tprice
-        print(tprice)
-        summary_price=tprice+100
-
-        order_date=date.today()
-
-        creating=orderplaced.objects.create(user=user,product=prodc,quantity=quantityy,ordered_date=order_date,total_amount=summary_price)
-
-        delcart=cart.objects.filter(user=user).delete()
-
-
-    uuser=orderplaced.objects.filter(user=user)
-    print(uuser)
-    namee=None
-    for i in uuser:
-        namee = i.user
-        print(namee)
-
-    if namee==None:
-        varr1='flex'
-        varr2='none'
-    else:
-        varr1='none'
-        varr2='flex'
-
-    return render(request,'checkout.html',{'uname':urll[1],'varr1':varr1,'varr2':varr2})'''
+    return render(request,'placed_order_details.html',{'od':ordered_details,'uname':urll[1]})

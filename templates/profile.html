@@ -12,51 +12,45 @@
 </div>
 <!--Page header end-->
 <div class="container-fluid d-flex">
-  <div class="card m-5 " style="width: 18rem;">
-      <div class="card-header">
-        Welcome!
-      </div>
-      <ul class="list-group list-group-flush">
-        <a style="text-decoration: none;" href="/profile/?name={{uname}}"><li class="list-group-item">Edit Profile</li></a>
-        <a style="text-decoration: none;" href="/manage_address/?name={{uname}}"><li class="list-group-item">Manage Address</li></a>
-        <a style="text-decoration: none;" href="/orders/?name={{uname}}"><li class="list-group-item">Your Orders</li></a>
-      </ul>
-  </div>
-  <div class="container-fluid mb-4 d-{{var1}}" id="editpro">
-    <h4 class="font-weight-semi-bold mb-4">Edit Profile</h4>
-    <form class="row" method="post">
-        {% csrf_token %}
-        <div class="col-md-6 form-group">
-          <label>Username</label>
-          <input class="form-control" type="text" name="username" placeholder="First Name" value="{{uname}}">
+    <div class="container-fluid m-5 " style="width: 18rem;">
+        <div class="card-header">
+            Welcome!{{uname}}
         </div>
-        <div class="col-md-6 form-group">
-          <label>E-mail</label>
-          <input class="form-control" type="text" name="email" placeholder="Email Address" value="{{u.email}}">
-        </div>
-        <div class="col-md-6 form-group">
-            <label>First Name</label>
-            <input class="form-control" type="text" name="fname" placeholder="First Name" value="{{u.first_name}}">
-        </div>
-        <div class="col-md-6 form-group">
-            <label>Last Name</label>
-            <input class="form-control" type="text" name="lname" placeholder="Last Name" value="{{u.last_name}}">
-        </div>
-        <button type="submit" class="btn btn-primary ml-3">Update</button>
-    </form>
-</div>
+        <ul class="list-group list-group-flush">
+            <a style="text-decoration: none;" href="/profile/?name={{uname}}"><li class="list-group-item">Edit Profile</li></a>
+            <a style="text-decoration: none;" href="/manage_address/?name={{uname}}"><li class="list-group-item">Manage Address</li></a>
+            <a style="text-decoration: none;" href="/orders/?name={{uname}}"><li class="list-group-item">Your Orders</li></a>
+        </ul>
+    </div>
+    <div class="container-fluid mb-4 d-{{var1}}" id="editpro">
+        <h4 class="font-weight-semi-bold mb-4">Edit Profile</h4>
+        <form class="row" method="post">
+            {% csrf_token %}
+            <div class="col-md-6 form-group">
+            <label>Username</label>
+            <input class="form-control" type="text" name="username" placeholder="First Name" value="{{uname}}">
+            </div>
+            <div class="col-md-6 form-group">
+            <label>E-mail</label>
+            <input class="form-control" type="text" name="email" placeholder="Email Address" value="{{u.email}}">
+            </div>
+            <div class="col-md-6 form-group">
+                <label>First Name</label>
+                <input class="form-control" type="text" name="fname" placeholder="First Name" value="{{u.first_name}}">
+            </div>
+            <div class="col-md-6 form-group">
+                <label>Last Name</label>
+                <input class="form-control" type="text" name="lname" placeholder="Last Name" value="{{u.last_name}}">
+            </div>
+            <button type="submit" class="btn btn-primary ml-3">Update</button>
+        </form>
+    </div>
 
-<div class="container-fluid mb-4 d-{{var2}}" id="manage">
-    <h4 class="font-weight-semi-bold">Address</h4>
-    <a href="add_address/?name={{uname}}" style="text-decoration: none; color: #1F7DFF; padding-left: 10px;"><i class="fa-solid fa-plus"></i>Add a New Address</a>
-    {% for a in address %}
-    <div class="text-dark bg-transparent mb-3 d-{{var5}}">
-        <div class="container-fluid border"></div>
-            <input type="checkbox" name="isselect">
-            <ul class="ml-5 pl-5">
-                <a href="edit_address/?name={{uname}},count={{a.add_count}}" style="text-decoration: none; color: #1F7DFF; padding-left: 10px;"><i class="fa-solid fa-pen"></i></a>
-                <a href="delete_address/?name={{uname}},count={{a.add_count}}" style="text-decoration: none; color: #1F7DFF; padding-left: 10px;"><i class="fa-solid fa-trash"></i></a>
-            </ul>
+    <div class="container-fluid mb-4 d-{{var2}}" id="manage">
+        <h4 class="font-weight-semi-bold">Address</h4>
+        <a href="add_address/?name={{uname}}" style="text-decoration: none; color: #1F7DFF; padding-left: 10px;"><i class="fa-solid fa-plus"></i>Add a New Address</a>
+        {% for a in address %}
+        <div class="text-dark bg-transparent border mb-3 d-{{var5}}">
             <div class="container-fluid">
                 <p class="card-text">Name : {{a.name}}</p>
                 <p class="card-text">Contact no. : {{a.phone}}</p>
@@ -64,126 +58,149 @@
                 <p class="card-text">{{a.city}},{{a.state}},{{a.country}}</p>
                 <p class="card-text">{{a.zip}}</p>
             </div>
+            <div class="list">
+                <ul class="ml-5 pl-5">
+                    <a href="edit_address/?name={{uname}},count={{a.add_count}}" style="text-decoration: none; color: #1F7DFF; padding-left: 10px;"><i class="fa-solid fa-pen"></i></a>
+                    <a href="delete_address/?name={{uname}},count={{a.add_count}}" style="text-decoration: none; color: #1F7DFF; padding-left: 10px;"><i class="fa-solid fa-trash"></i></a>
+                </ul>
+            </div>
         </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
 
-<form class="row d-{{var4}}" method="post" id="detail_form">
-    {% csrf_token %}
-    {% for a in address_details %}
-    <div class="col-md-6 form-group">
-        <label>Name</label>
-        <input class="form-control" type="text" placeholder="Full Name" name="fname" value="{{a.name}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>E-mail</label>
-        <input class="form-control" type="text" placeholder="Email Address" name="email" value="{{a.email}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>Mobile No</label>
-        <input class="form-control" type="text" placeholder="Mobile Number" name="mobno" value="{{a.phone}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>Address</label>
-        <input class="form-control" type="text" placeholder="Enter Address" name="address" value="{{a.address}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>Country</label>
-        <select class="custom-select" name="country" value="{{a.country}}">
-            {% for c in country_choices %}
-                <option>{{c}}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-6 form-group">
-        <label>City</label>
-        <input class="form-control" type="text" placeholder="City" name="city" value="{{a.city}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>State</label>
-        <select class="custom-select" name="state" value="{{a.state}}">
-            {% for i in state_choices %}
-                <option>{{i}}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-6 form-group">
-        <label>ZIP Code</label>
-        <input class="form-control" type="text" placeholder="Zip code" name="zip" value="{{a.zipcode}}">
-    </div>
-    <!--<div class="col-md-12 form-group">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="newaccount" name="add_ress">
-            <label class="custom-control-label" for="newaccount">Add an address</label>
+    <form class="row d-{{var4}}" method="post" id="detail_form">
+        {% csrf_token %}
+        {% for a in address_details %}
+        <div class="col-md-6 form-group">
+            <label>Name</label>
+            <input class="form-control" type="text" placeholder="Full Name" name="fname" value="{{a.name}}">
         </div>
-    </div>
-    <div class="col-md-12 form-group">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="shipto" name="ship_diff">
-            <label class="custom-control-label" for="shipto"  data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
+        <div class="col-md-6 form-group">
+            <label>E-mail</label>
+            <input class="form-control" type="text" placeholder="Email Address" name="email" value="{{a.email}}">
         </div>
-    </div>-->
-    <button style="background-color: #1F7DFF; border: none; color: white; padding: 10px 15px 10px 15px; border-radius: 2px; margin-left: 17px;" type="submit">Enter</button>
-    {% endfor %}
-</form>
-<form class="row d-{{var6}}" method="post" id="detail_form">
-    {% csrf_token %}
-    <div class="col-md-6 form-group">
-        <label>Name</label>
-        <input class="form-control" type="text" placeholder="Full Name" name="fname" value="{{a.name}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>E-mail</label>
-        <input class="form-control" type="text" placeholder="Email Address" name="email" value="{{a.email}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>Mobile No</label>
-        <input class="form-control" type="text" placeholder="Mobile Number" name="mobno" value="{{a.phone}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>Address</label>
-        <input class="form-control" type="text" placeholder="Enter Address" name="address" value="{{a.address}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>Country</label>
-        <select class="custom-select" name="country" value="{{a.country}}">
-            {% for c in country_choices %}
-                <option>{{c}}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-6 form-group">
-        <label>City</label>
-        <input class="form-control" type="text" placeholder="City" name="city" value="{{a.city}}">
-    </div>
-    <div class="col-md-6 form-group">
-        <label>State</label>
-        <select class="custom-select" name="state" value="{{a.state}}">
-            {% for i in state_choices %}
-                <option>{{i}}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-6 form-group">
-        <label>ZIP Code</label>
-        <input class="form-control" type="text" placeholder="Zip code" name="zip" value="{{a.zipcode}}">
-    </div>
-    <!--<div class="col-md-12 form-group">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="newaccount" name="add_ress">
-            <label class="custom-control-label" for="newaccount">Add an address</label>
+        <div class="col-md-6 form-group">
+            <label>Mobile No</label>
+            <input class="form-control" type="text" placeholder="Mobile Number" name="mobno" value="{{a.phone}}">
         </div>
-    </div>
-    <div class="col-md-12 form-group">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="shipto" name="ship_diff">
-            <label class="custom-control-label" for="shipto"  data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
+        <div class="col-md-6 form-group">
+            <label>Address</label>
+            <input class="form-control" type="text" placeholder="Enter Address" name="address" value="{{a.address}}">
         </div>
-    </div>-->
-    <button style="background-color: #1F7DFF; border: none; color: white; padding: 10px 15px 10px 15px; border-radius: 2px; margin-left: 17px;" type="submit">Enter</button>
-</form>
-</div>
-
+        <div class="col-md-6 form-group">
+            <label>Country</label>
+            <select class="custom-select" name="country" value="{{a.country}}">
+                {% for c in country_choices %}
+                    <option>{{c}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6 form-group">
+            <label>City</label>
+            <input class="form-control" type="text" placeholder="City" name="city" value="{{a.city}}">
+        </div>
+        <div class="col-md-6 form-group">
+            <label>State</label>
+            <select class="custom-select" name="state" value="{{a.state}}">
+                {% for i in state_choices %}
+                    <option>{{i}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6 form-group">
+            <label>ZIP Code</label>
+            <input class="form-control" type="text" placeholder="Zip code" name="zip" value="{{a.zipcode}}">
+        </div>
+        <!--<div class="col-md-12 form-group">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="newaccount" name="add_ress">
+                <label class="custom-control-label" for="newaccount">Add an address</label>
+            </div>
+        </div>
+        <div class="col-md-12 form-group">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="shipto" name="ship_diff">
+                <label class="custom-control-label" for="shipto"  data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
+            </div>
+        </div>-->
+        <button style="background-color: #1F7DFF; border: none; color: white; padding: 10px 15px 10px 15px; border-radius: 2px; margin-left: 17px;" type="submit">Enter</button>
+        {% endfor %}
+    </form>
+    <form class="row d-{{var6}}" method="post" id="detail_form">
+        {% csrf_token %}
+        <div class="col-md-6 form-group">
+            <label>Name</label>
+            <input class="form-control" type="text" placeholder="Full Name" name="fname" value="{{a.name}}">
+        </div>
+        <div class="col-md-6 form-group">
+            <label>E-mail</label>
+            <input class="form-control" type="text" placeholder="Email Address" name="email" value="{{a.email}}">
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Mobile No</label>
+            <input class="form-control" type="text" placeholder="Mobile Number" name="mobno" value="{{a.phone}}">
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Address</label>
+            <input class="form-control" type="text" placeholder="Enter Address" name="address" value="{{a.address}}">
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Country</label>
+            <select class="custom-select" name="country" value="{{a.country}}">
+                {% for c in country_choices %}
+                    <option>{{c}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6 form-group">
+            <label>City</label>
+            <input class="form-control" type="text" placeholder="City" name="city" value="{{a.city}}">
+        </div>
+        <div class="col-md-6 form-group">
+            <label>State</label>
+            <select class="custom-select" name="state" value="{{a.state}}">
+                {% for i in state_choices %}
+                    <option>{{i}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6 form-group">
+            <label>ZIP Code</label>
+            <input class="form-control" type="text" placeholder="Zip code" name="zip" value="{{a.zipcode}}">
+        </div>
+        <!--<div class="col-md-12 form-group">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="newaccount" name="add_ress">
+                <label class="custom-control-label" for="newaccount">Add an address</label>
+            </div>
+        </div>
+        <div class="col-md-12 form-group">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="shipto" name="ship_diff">
+                <label class="custom-control-label" for="shipto"  data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
+            </div>
+        </div>-->
+        <button style="background-color: #1F7DFF; border: none; color: white; padding: 10px 15px 10px 15px; border-radius: 2px; margin-left: 17px;" type="submit">Enter</button>
+    </form>
+    </div>
+    <div class="container-fluid mb-4 d-{{var3}}">
+        <h3>Order history</h3>
+        <br>
+        {% for o in od %}
+        <div style="border: 2px;" class="container-fluid d-inline px-xl-3 m-5">
+            <div id="one">
+                <img src="{{o.product.product_image.url}}" alt="Product Image" width="50" height="50">
+                <h3>{{o.product.title}}</h3><h2>{{0.total_amount}}</h2>
+                <p>{{o.product.brand}}</p>
+                <p>Quantity:{{o.quantity}}</p>
+                <p>{{o.address_details}}</p>
+            </div>
+            <div id="two">
+                {{o.status}}<br>
+                Date:{{o.ordered_date}}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 

@@ -1,0 +1,22 @@
+{% include 'upper.html' %}
+<div class="container-fluid">
+    <img src="/static/img/order_placed_image.png" alt="orderplaced" style="height: 120px; width: 120px; margin-left: 45%;">
+    <p style="text-align: center; margin-top: 40px; font-weight: bold;">Your Order has been placed.Thank you for ordering from us!</p>
+</div>
+{% for o in od %}
+<div class="container-fluid border d-flex px-xl-3 m-5">
+    <div id="one">
+        <img src="{{o.product.product_image.url}}" alt="Product Image" width="50" height="50">
+        <h3>{{o.product.title}}</h3><h2>{{0.total_amount}}</h2>
+        <p>{{o.product.brand}}</p>
+        <p>Quantity:{{o.quantity}}</p>
+        <p>{{o.address_details}}</p>
+    </div>
+    <div id="two">
+        {{o.status}}<br>
+        Date:{{o.ordered_date}}
+    </div>
+</div>
+{% endfor %}
+
+{% include 'lower.html' %}
