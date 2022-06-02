@@ -210,9 +210,12 @@ def add_to_cart(request):
 def cart_item_quantity(request):
     url = request.build_absolute_uri()
     urll=url.split('=')
+    print(urll)
     urll2=urll[1].split(',')
+    print(urll2)
+    urll3=urll[2].split(',')
     user = User.objects.get(username=urll2[0])
-    prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
+    prod = cart.objects.filter(Q(user=user) & Q(id=urll[3]))
     for i in prod:
         quanttity=i.quantity
         print(quanttity)
@@ -221,7 +224,7 @@ def cart_item_quantity(request):
     quanttity=quanttity+1
     print(quanttity)
     totalprice=main_price+total
-    quantinc=cart.objects.filter(user=user).update(quantity=quanttity,price=totalprice)
+    quantinc=cart.objects.filter(Q(user=user) & Q(id=urll[3])).update(quantity=quanttity,price=totalprice)
     print(quantinc)
     myurl='http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
     summary_total=totalprice+100
@@ -233,7 +236,7 @@ def dec_quantity(request):
     urll=url.split('=')
     urll2=urll[1].split(',')
     user = User.objects.get(username=urll2[0])
-    prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
+    prod = cart.objects.filter(Q(user=user) & Q(id=urll[3])).order_by('-id')
     for i in prod:
         quanttity=i.quantity
         print(quanttity)
@@ -244,7 +247,7 @@ def dec_quantity(request):
         quanttity=quanttity-1
         totalprice=total-main_price
 
-    quantinc=cart.objects.filter(user=user).update(quantity=quanttity,price=totalprice)
+    quantinc=cart.objects.filter(Q(user=user) & Q(id=urll[3])).update(quantity=quanttity,price=totalprice)
     print(quantinc)
 
     myurl='http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
