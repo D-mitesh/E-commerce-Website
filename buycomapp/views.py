@@ -1,6 +1,4 @@
 from asyncio.windows_events import NULL
-from turtle import title
-from unittest import removeResult
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpRequest
