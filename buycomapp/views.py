@@ -8,9 +8,15 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password,check_password
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import user_logged_in,user_logged_out,user_login_failed
+from django.dispatch import Signal
 from .models import *
 from django.db.models import Q
 from datetime import date
+from rest_framework.decorators import api_view
+from .serializers import *
+from rest_framework.response import Response
+
 # Create your views here.
 
 def home(request):
@@ -52,7 +58,6 @@ def shop(request):
     return render(request,'shop.html',{'specified_products':obj1,'main':main,'uname':page2[0]})
 
 def product_detail(request):
-    #item=product.objects.get(id=pk)
     url = request.build_absolute_uri()
     urll=url.split('=')
     urll2=urll[1].split(',')
@@ -63,7 +68,7 @@ def mycart(request):
     
     url = request.build_absolute_uri()
     urll=url.split('=')
-    print(urll)
+    #print(urll)
     try:
         if urll[1] == 'None':
             messages.error(request,'Please login or register to view your cart')
@@ -71,14 +76,14 @@ def mycart(request):
         else:
             user = User.objects.get(username=urll[1])
             prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
-            print(prod)
+            #print(prod)
             tprice=0
             for i in prod:
                 if i!='':
                     quanttity=i.quantity
                     tprice=i.price+tprice
-                    print(tprice)
-                    print('quantiy : ',quanttity)
+                    #print(tprice)
+                    #print('quantiy : ',quanttity)
                     summary_price=tprice+100
                 else:
                     messages.error(request,"No item added please add a item")
@@ -106,8 +111,8 @@ def checkout(request):
                 prodc=i.product
                 quanttity=i.quantity
                 tprice=i.price+tprice
-                print(tprice)
-                print('quantiy : ',quanttity)
+                #print(tprice)
+                #print('quantiy : ',quanttity)
                 summary_price=tprice+100
 
             if request.method=='POST':
@@ -210,25 +215,25 @@ def add_to_cart(request):
 def cart_item_quantity(request):
     url = request.build_absolute_uri()
     urll=url.split('=')
-    print(urll)
+    #print(urll)
     urll2=urll[1].split(',')
-    print(urll2)
+    #print(urll2)
     urll3=urll[2].split(',')
     user = User.objects.get(username=urll2[0])
     prod = cart.objects.filter(Q(user=user) & Q(id=urll[3]))
     for i in prod:
         quanttity=i.quantity
-        print(quanttity)
+        #print(quanttity)
         total=i.price
         main_price=i.product.discount_price
     quanttity=quanttity+1
-    print(quanttity)
+    #print(quanttity)
     totalprice=main_price+total
     quantinc=cart.objects.filter(Q(user=user) & Q(id=urll[3])).update(quantity=quanttity,price=totalprice)
-    print(quantinc)
+    #print(quantinc)
     myurl='http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
     summary_total=totalprice+100
-    print(summary_total)
+    #print(summary_total)
     return redirect(myurl,{'cart_item':prod,'summary_price':summary_total})
 
 def dec_quantity(request):
@@ -239,7 +244,7 @@ def dec_quantity(request):
     prod = cart.objects.filter(Q(user=user) & Q(id=urll[3])).order_by('-id')
     for i in prod:
         quanttity=i.quantity
-        print(quanttity)
+        #print(quanttity)
         total=i.price
         main_price=i.product.discount_price
     
@@ -248,12 +253,12 @@ def dec_quantity(request):
         totalprice=total-main_price
 
     quantinc=cart.objects.filter(Q(user=user) & Q(id=urll[3])).update(quantity=quanttity,price=totalprice)
-    print(quantinc)
+    #print(quantinc)
 
     myurl='http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
 
     summary_total=totalprice+100
-    print(summary_total)
+    #print(summary_total)
 
     return redirect(myurl,{'cart_item':prod,'summary_price':summary_total})
     
@@ -270,14 +275,14 @@ def cart_item_delete(request):
 def profile(request):
     
     url = request.build_absolute_uri()
-    print(url)
+    #print(url)
     page=url.split('/')
-    print(page)
-    print(len(page))
+    #print(page)
+    #print(len(page))
 
     if len(page)==5:
         userr=page[4].split('=')
-        print(userr)
+        #print(userr)
         user=User.objects.get(username=userr[1])
     else:
         userr=page[5].split('=')
@@ -311,17 +316,17 @@ def profile(request):
         var1='none'
         var2='block'
         var3='none'
-        print(user)
+        #print(user)
         uuser=customer.objects.filter(user=user)
         namee=None
         count=0
         for i in uuser:
             count=count+1
-            print(count)
+            #print(count)
             addcount=i.add_count
             addcount=count
             chnge=customer.objects.filter(name=i.name).update(add_count=addcount)
-            print(addcount)
+            #print(addcount)
             namee = i.user
 
         if namee==None:
@@ -336,7 +341,7 @@ def profile(request):
         if page[4]=='edit_address':
             var4='flex'
             var5='none'
-            print(">>>>>>>",userr[2])
+            #print(">>>>>>>",userr[2])
             uuser=customer.objects.filter(Q(add_count=userr[2]) & Q(user=user))
             if request.method=='POST':
                 fname=request.POST['fname']
@@ -394,3 +399,17 @@ def placed_order_details(request):
     ordered_details=orderplaced.objects.filter(Q(user=user) & Q(ordered_date=date.today()))
 
     return render(request,'placed_order_details.html',{'od':ordered_details,'uname':urll[1]})
+
+
+@api_view(['GET'])
+def get_products(request,pk=None):
+    if request.method=='GET':
+        id=pk
+        if id is not None:
+            stu=product.objects.get(id=id)
+            serializer=productserializer(stu)
+            return Response(serializer.data)
+
+        stu=product.objects.all()
+        serializer=productserializer(stu,many=True)
+        return Response(serializer.data)

@@ -22,4 +22,6 @@ urlpatterns = [
     path('manage_address/add_address/',views.profile),
     path('manage_address/delete_address/',views.profile),
     path('placed_order_details/',views.placed_order_details),
+    path('get_product/',views.get_products),
+    path('get_product/<int:pk>',views.get_products),
 ]

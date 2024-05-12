@@ -117,17 +117,3 @@ class cart(models.Model):
 
     def __str__(self):
         return str(self.user)
-
-'''class shipping_address(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,verbose_name='User')
-    name=models.CharField(max_length=100,verbose_name='name')
-    email=models.EmailField(max_length=100,verbose_name='2ndcustomer_email')
-    phone=models.CharField(max_length=14,verbose_name='phone_number')
-    address=models.CharField(max_length=200,verbose_name='Address')
-    country=models.CharField(max_length=10,choices = country_choices,verbose_name='Country')
-    state=models.CharField(max_length=30,choices = state_choices,verbose_name='State')
-    city=models.CharField(max_length=50,verbose_name='City')
-    zipcode=models.PositiveIntegerField(verbose_name='Zipcode')
-
-    def __str__(self):
-        return str(self.user)'''
