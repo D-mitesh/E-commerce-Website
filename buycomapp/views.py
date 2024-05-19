@@ -35,7 +35,7 @@ def home(request):
 
 def shop(request):
     main=product.objects.all()
-    url = request.build_absolute_uri() #http://127.0.0.1:8000/shop/?name=mitesh04,category=Smartphone
+    url = request.build_absolute_uri()
     page = url.split('=')
     page2=page[1].split(',')
     if page[2] == "Smartphone":
@@ -69,7 +69,7 @@ def mycart(request):
     try:
         if urll[1] == 'None':
             messages.error(request,'Please login or register to view your cart')
-            return redirect('http://127.0.0.1:8000/login/')
+            return redirect('/login/')
         else:
             user = User.objects.get(username=urll[1])
             prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
@@ -136,7 +136,7 @@ def checkout(request):
 
                     cartremove=cart.objects.filter(product=cc.product).delete()
 
-                    url='http://127.0.0.1:8000/placed_order_details/?name={}'.format(urll[1])
+                    url='/placed_order_details/?name={}'.format(urll[1])
 
                     return redirect(url,{'uname':urll[1]})
 
@@ -147,7 +147,7 @@ def checkout(request):
 
     else:
         messages.error(request,"Please login to checkout your items")
-        return redirect('http://127.0.0.1:8000/login/')
+        return redirect('/login/')
 
 def contact(request):
     return render(request,'contact.html',{})
@@ -160,13 +160,13 @@ def login(request):
             user = User.objects.get(username=uname)
             check = check_password(password,user.password)
             if check==True :
-                url = 'http://127.0.0.1:8000/?name={}'.format(uname)
+                url = '/?name={}'.format(uname)
                 return redirect(url)
             else :
                 messages.error(request,'Invalid credentials!')
         except User.DoesNotExist:
             messages.error(request,'User is Not Here')
-            return redirect('http://127.0.0.1:8000/login/')
+            return redirect('/login/')
     return render(request,'login.html')
 
 def register(request):
@@ -184,7 +184,7 @@ def register(request):
             myuser.last_name=lname
             myuser.save()
             messages.success(request,'Registered successfully!')
-            return redirect('http://127.0.0.1:8000/register/')
+            return redirect('/register/')
         except IntegrityError as error:
             if error=="UNIQUE constraint failed: auth_user.username":
                 messages.error(request,'Username already exist!')
@@ -192,7 +192,7 @@ def register(request):
 
 def loggedout(request):
     logout(request)
-    return redirect('http://127.0.0.1:8000/')
+    return redirect('/')
 
 def add_to_cart(request):
     url = request.build_absolute_uri()
@@ -200,13 +200,13 @@ def add_to_cart(request):
     urll2=urll[1].split(',')
     if urll2[0]=='None':
         messages.error(request,'Please login or register to add items in your cart')
-        return redirect('http://127.0.0.1:8000/login/')
+        return redirect('/login/')
     
     else:
         user=User.objects.get(username=urll2[0])
         prod=product.objects.get(id=urll[2])
         obj=cart.objects.create(user=user,product=prod,price=prod.discount_price)
-        url = 'http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
+        url = '/cart/?name={}'.format(urll2[0])
         return redirect(url)
 
 def cart_item_quantity(request):
@@ -228,7 +228,7 @@ def cart_item_quantity(request):
     totalprice=main_price+total
     quantinc=cart.objects.filter(Q(user=user) & Q(id=urll[3])).update(quantity=quanttity,price=totalprice)
     #print(quantinc)
-    myurl='http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
+    myurl='/cart/?name={}'.format(urll2[0])
     summary_total=totalprice+100
     #print(summary_total)
     return redirect(myurl,{'cart_item':prod,'summary_price':summary_total})
@@ -252,7 +252,7 @@ def dec_quantity(request):
     quantinc=cart.objects.filter(Q(user=user) & Q(id=urll[3])).update(quantity=quanttity,price=totalprice)
     #print(quantinc)
 
-    myurl='http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
+    myurl='/cart/?name={}'.format(urll2[0])
 
     summary_total=totalprice+100
     #print(summary_total)
@@ -266,7 +266,7 @@ def cart_item_delete(request):
     user = User.objects.get(username=urll2[0])
     prod = cart.objects.filter(Q(user=user) & Q(pending=True)).order_by('-id')
     removee=cart.objects.filter(id=urll[2]).delete()
-    myurl='http://127.0.0.1:8000/cart/?name={}'.format(urll2[0])
+    myurl='/cart/?name={}'.format(urll2[0])
     return redirect(myurl,{'cart_item':prod})
 
 def profile(request):
@@ -355,7 +355,7 @@ def profile(request):
             
         elif page[4]=='delete_address':
             dlt=customer.objects.filter(add_count=userr[2]).delete()
-            url="http://127.0.0.1:8000/manage_address/?name={}".format(myuser[0])
+            url="/manage_address/?name={}".format(myuser[0])
             return redirect(url,{'uname':user.username,'var1':var1,'var2':var2,'var3':var3,'var4':var4,'var5':var5,'var6':var6,'country_choices':countchoice,'state_choices':statechoice,'address_details':uuser})
         elif page[4]=='add_address':
             var4='none'

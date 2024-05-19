@@ -1,3 +1,6 @@
 django
 Pillow
 djangorestframework
+gunicorn
+boto3
+django-storages
