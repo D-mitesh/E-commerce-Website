@@ -2,7 +2,7 @@
 
 echo "Your shell is currently working in '$(pwd)'"
 
-sudo docker-compose up -d
-sudo docker ps -a
+echo "123456@" | sudo -S docker-compose up -d
+echo "123456@" | sudo -S docker-compose ps -a
 
 
